@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный Ассистент</title>
-    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/client-sdk-web@1/dist/vapi.min.js"></script>
     <style>
         body {
             background-color: #1a1a1a;
@@ -16,7 +15,7 @@
             height: 100vh;
             margin: 0;
             font-family: sans-serif;
-            overflow: hidden; /* Убирает прокрутку */
+            overflow: hidden;
         }
         #call-btn {
             width: 150px;
@@ -31,7 +30,7 @@
             font-weight: bold;
             transition: all 0.3s ease;
             outline: none;
-            -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат при нажатии на iPhone */
+            -webkit-tap-highlight-color: transparent;
         }
         #call-btn:active { transform: scale(0.95); }
         .pulsing { animation: pulse 2s infinite; }
@@ -48,12 +47,12 @@
     <button id="call-btn">📞 Позвонить</button>
     <div id="status">Готов к работе</div>
 
-    <script>
+    <script type="module">
+        // Импортируем Vapi напрямую из облака (ESM версия)
+        import Vapi from 'https://cdn.jsdelivr.net/npm/@vapi-ai/web/+esm';
+
         // --- ВАШИ КЛЮЧИ ---
-        // Public Key (начинается на c04...)
         const apiKey = "c0477c0e-7b20-422e-8f6d-438692519d98"; 
-        
-        // Assistant ID (Вставьте сюда ID Киры из настроек ассистента)
         const assistantId = "67aa4515-b4b7-439e-83f7-e45eb2981b02"; 
         // ------------------
 
@@ -64,17 +63,14 @@
 
         btn.addEventListener('click', () => {
             if (!isCallActive) {
-                // Запуск звонка
                 vapi.start(assistantId);
                 status.innerText = "Подключение...";
-                btn.disabled = true; // Блокируем кнопку на пару секунд
+                btn.disabled = true;
             } else {
-                // Остановка звонка
                 vapi.stop();
             }
         });
 
-        // События
         vapi.on('call-start', () => {
             isCallActive = true;
             btn.disabled = false;
@@ -97,14 +93,8 @@
             console.error(e);
             isCallActive = false;
             btn.disabled = false;
-            status.innerText = "Ошибка (см. консоль)";
+            // status.innerText = "Ошибка доступа"; // Можно раскомментировать для отладки
         });
     </script>
 </body>
 </html>
-
-
-
-
-
-
