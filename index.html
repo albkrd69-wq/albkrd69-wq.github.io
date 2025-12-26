@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный Ассистент</title>
+    <script src="https://cdn.jsdelivr.net/gh/vapi-ai/client-sdk-web@1/dist/vapi.min.js"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        #call-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #00d2ff, #3a7bd5);
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        #call-btn:active { transform: scale(0.95); }
+        .pulsing { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(0, 210, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
+        }
+        #status { margin-top: 20px; font-size: 16px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <button id="call-btn">📞 Call to Kira</button>
+    <div id="status">Готов к работе</div>
+
+    <script>
+        // ВСТАВЬТЕ СВОИ КЛЮЧИ ЗДЕСЬ
+        const vapi = new Vapi("c0477c0e-7b20-422e-8f6d-438692519d98"); 
+        const assistantId = "67aa4515-b4b7-439e-83f7-e45eb2981b02"; 
+
+        const btn = document.getElementById('call-btn');
+        const status = document.getElementById('status');
+        let isCallActive = false;
+
+        btn.addEventListener('click', () => {
+            if (!isCallActive) {
+                // Начать звонок
+                vapi.start(assistantId);
+                status.innerText = "Подключение...";
+            } else {
+                // Завершить звонок
+                vapi.stop();
+            }
+        });
+
+        // События Vapi для смены статуса
+        vapi.on('call-start', () => {
+            isCallActive = true;
+            btn.innerText = "Стоп";
+            btn.classList.add('pulsing');
+            btn.style.background = "linear-gradient(145deg, #ff416c, #ff4b2b)";
+            status.innerText = "Говорите...";
+        });
+
+        vapi.on('call-end', () => {
+            isCallActive = false;
+            btn.innerText = "📞 Позвонить";
+            btn.classList.remove('pulsing');
+            btn.style.background = "linear-gradient(145deg, #00d2ff, #3a7bd5)";
+            status.innerText = "Звонок завершен";
+        });
+
+        vapi.on('error', (e) => {
+            console.error(e);
+            status.innerText = "Ошибка доступа к микрофону";
+        });
+    </script>
+</body>
+</html>
